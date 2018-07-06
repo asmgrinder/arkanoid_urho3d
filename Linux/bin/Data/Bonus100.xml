@@ -1,0 +1,6 @@
+<material>
+	<technique name="DiffAlpha.xml"/>
+	<texture name="Bonus100.png" unit="diffuse"/>
+	<parameter name="MatDiffColor" value="1 1 1 0.5"/>
+	<parameter name="MatSpecColor" value="0 0 0 50"/>
+</material>

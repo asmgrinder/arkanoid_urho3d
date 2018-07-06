@@ -1,0 +1,9 @@
+<cubemap>
+    <face name="Stars_PosX.png" />
+    <face name="Stars_NegX.png" />
+    <face name="Stars_PosY.png" />
+    <face name="Stars_NegY.png" />
+    <face name="Stars_PosZ.png" />
+    <face name="Stars_NegZ.png" />
+    <quality low="1" />
+</cubemap>
