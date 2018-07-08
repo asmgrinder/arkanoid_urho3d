@@ -378,7 +378,7 @@ public:
         zone->SetFogEnd(3000.0f);
         zone->SetBoundingBox(BoundingBox(-30.0f, 30.0f));
 
-//         // Let's put some sky in there.
+        // skybox component caused rendering artefacts on my phone, so I had to replace it with this construction
         skyNode_ = scene_->CreateChild("Sky");
         skyNode_->SetScale(8);
         RigidBody* skyBody = skyNode_->CreateComponent<RigidBody>();
