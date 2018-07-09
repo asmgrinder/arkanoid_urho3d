@@ -57,6 +57,8 @@
 #include <Urho3D/Physics/PhysicsWorld.h>
 #include <Urho3D/Physics/RigidBody.h>
 #include <Urho3D/Physics/Constraint.h>
+#include <Urho3D/Audio/Audio.h>
+#include <Urho3D/Audio/AudioEvents.h>
 
 #include "ball.h"
 #include "brick.h"
@@ -82,6 +84,7 @@ protected:
     SharedPtr<Button> pauseButton_;
     SharedPtr<Window> scoresPanel_;
     SharedPtr<Text> scoresText_;
+    SharedPtr<SoundSource> musicSource_;
     Vector<SharedPtr<Node> > bricks_;
     Vector<SharedPtr<Node> > bonuses_;
 
@@ -96,13 +99,14 @@ public:
     virtual void Start();
     virtual void Stop();
 protected:
-    void handlePause(StringHash eventType, VariantMap& eventData);
     void setupPhysicalProperties(RigidBody* rigidBody);
     Node* setupNode(const String& model, const String& material, const String& nodeName = String::EMPTY, bool setupShape = true);
     void clearLevel();
     void clearActiveBonuses();
     void clearBonuses();
     void prepareLevel();
+    void startMusic();
+    void handlePause(StringHash eventType, VariantMap& eventData);
     void handleKeyDown(StringHash eventType,VariantMap& eventData);
     void handleUpdate(StringHash eventType,VariantMap& eventData);
 };

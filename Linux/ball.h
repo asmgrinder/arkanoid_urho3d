@@ -24,6 +24,10 @@
 
 #include <Urho3D/Input/Controls.h>
 #include <Urho3D/Scene/LogicComponent.h>
+#include <Urho3D/Resource/ResourceCache.h>
+#include <Urho3D/Resource/XMLFile.h>
+#include <Urho3D/Audio/Sound.h>
+#include <Urho3D/Audio/SoundSource.h>
 
 using namespace Urho3D;
 
@@ -40,6 +44,10 @@ public:
     virtual void FixedUpdate(float timeStep);
     virtual float GetRadius() { return ballRadius_; }
 protected:
+    /// Handle physics collision event.
+    void handleNodeCollision(StringHash eventType, VariantMap& eventData);
+    void playSound(Sound* sound);
     float ballRadius_;
     int scores_;
+    SharedPtr<Sound> hitSound_;
 };

@@ -23,41 +23,6 @@
 #include <string>
 #include <sstream>
 
-#include <Urho3D/Core/CoreEvents.h>
-#include <Urho3D/Engine/Application.h>
-#include <Urho3D/Engine/Engine.h>
-#include <Urho3D/Engine/EngineDefs.h>
-#include <Urho3D/IO/FileSystem.h>
-#include <Urho3D/Input/Input.h>
-#include <Urho3D/Input/InputEvents.h>
-#include <Urho3D/Resource/ResourceCache.h>
-#include <Urho3D/Resource/XMLFile.h>
-#include <Urho3D/IO/Log.h>
-#include <Urho3D/UI/UI.h>
-#include <Urho3D/UI/Text.h>
-#include <Urho3D/UI/Font.h>
-#include <Urho3D/UI/Window.h>
-#include <Urho3D/UI/Button.h>
-#include <Urho3D/UI/UIEvents.h>
-#include <Urho3D/Scene/Scene.h>
-#include <Urho3D/Scene/SceneEvents.h>
-#include <Urho3D/Graphics/Graphics.h>
-#include <Urho3D/Graphics/Camera.h>
-#include <Urho3D/Graphics/Geometry.h>
-#include <Urho3D/Graphics/Renderer.h>
-#include <Urho3D/Graphics/Zone.h>
-#include <Urho3D/Graphics/DebugRenderer.h>
-#include <Urho3D/Graphics/Octree.h>
-#include <Urho3D/Graphics/Light.h>
-#include <Urho3D/Graphics/Model.h>
-#include <Urho3D/Graphics/StaticModel.h>
-#include <Urho3D/Graphics/Material.h>
-#include <Urho3D/Graphics/Skybox.h>
-#include <Urho3D/Physics/CollisionShape.h>
-#include <Urho3D/Physics/PhysicsWorld.h>
-#include <Urho3D/Physics/RigidBody.h>
-#include <Urho3D/Physics/Constraint.h>
-
 #include "arkanoid.h"
 #include "ball.h"
 #include "brick.h"
@@ -74,7 +39,9 @@ const float SPEED_TURBO = 2;
 // so it's usually minimal code setting defaults for
 // whatever instance variables you have.
 // You can also do this in the Setup method.
-Arkanoid::Arkanoid(Context * context) : Application(context), framecount_(0), time_(0), velocity_(SPEED_NORMAL), paused_(false), scores_(0)
+Arkanoid::Arkanoid(Context * context) : Application(context),
+                                            framecount_(0), time_(0), musicSource_(nullptr),
+                                            velocity_(SPEED_NORMAL), paused_(false), scores_(0)
 {
 }
 
@@ -83,6 +50,15 @@ void Arkanoid::handlePause(StringHash eventType, VariantMap& eventData)
     // everything (except paddle) moves due to physics, so disabling update will pause everything
     paused_ = !paused_;
     physicsWorld_->SetUpdateEnabled(!paused_);
+    
+    if (false != paused_)
+    {
+        musicSource_->Stop();
+    }
+    else
+    {
+        startMusic();
+    }
 }
 
 void Arkanoid::setupPhysicalProperties(RigidBody* rigidBody)
@@ -460,12 +436,28 @@ void Arkanoid::Start()
     Renderer* renderer = GetSubsystem<Renderer>();
     SharedPtr<Viewport> viewport(new Viewport(context_, scene_, cameraNode_->GetComponent<Camera>()));
     renderer->SetViewport(0, viewport);
-
+    // create music component
+    musicSource_ = scene_->CreateComponent<SoundSource>();
+    // Set the sound type to music so that master volume control works correctly
+    musicSource_->SetSoundType(SOUND_MUSIC);
     // Subscribe to the events to handle.
     SubscribeToEvent(E_KEYDOWN, URHO3D_HANDLER(Arkanoid, handleKeyDown));
     SubscribeToEvent(E_UPDATE, URHO3D_HANDLER(Arkanoid, handleUpdate));
     // fill field with bricks
     prepareLevel();
+    
+    startMusic();
+}
+
+void Arkanoid::startMusic()
+{
+    ResourceCache* cache = GetSubsystem<ResourceCache>();
+    // get music resourse
+    Sound* music = cache->GetResource<Sound>("Music/Ninja Gods.ogg");
+    // Set the song to loop
+    music->SetLooped(true);
+    // start playing
+    musicSource_->Play(music);
 }
 
 // Good place to get rid of any system resources that requires the

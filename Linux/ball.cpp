@@ -49,6 +49,11 @@ void Ball::Start()
     // Component has been inserted into its scene node.
     BoundingBox bb = GetComponent<StaticModel>()->GetBoundingBox();
     ballRadius_ = (bb.max_ - bb.min_).Length() * 0.5f / Sqrt(3.0f);
+    // get sounds
+    ResourceCache* cache = GetSubsystem<ResourceCache>();
+    hitSound_ = cache->GetResource<Sound>("Sounds/PlayerFistHit.wav");
+    // Component has been inserted into its scene node. Subscribe to events now
+    SubscribeToEvent(GetNode(), E_NODECOLLISION, URHO3D_HANDLER(Ball, handleNodeCollision));
 }
 
 void Ball::FixedUpdate(float /*timeStep*/)
@@ -58,4 +63,42 @@ void Ball::FixedUpdate(float /*timeStep*/)
     Vector3 ballPosition = body->GetPosition();
     ballPosition.z_ = GetRadius();
     body->SetPosition(ballPosition);
+}
+
+void Ball::playSound(Sound* sound)
+{
+    if (nullptr != sound)
+    {
+        // Create a SoundSource component for playing the sound. The SoundSource component plays
+        // non-positional audio, so its 3D position in the scene does not matter. For positional sounds the
+        // SoundSource3D component would be used instead
+        SoundSource* soundSource = node_->GetScene()->CreateComponent<SoundSource>();
+        // Component will automatically remove itself when the sound finished playing
+        soundSource->SetAutoRemoveMode(REMOVE_COMPONENT);
+        soundSource->Play(sound);
+        // In case we also play music, set the sound volume below maximum so that we don't clip the output
+        soundSource->SetGain(0.75f);
+    }
+}
+
+void Ball::handleNodeCollision(StringHash /*eventType*/, VariantMap& eventData)
+{
+    using namespace NodeCollision;
+    
+    Node* otherNode = reinterpret_cast<Node*>(eventData[P_OTHERNODE].GetVoidPtr());
+    if (String("Brick") == otherNode->GetName()
+        || String("Paddle") == otherNode->GetName())
+    {
+        playSound(hitSound_);
+    }
+
+    MemoryBuffer contacts(eventData[P_CONTACTS].GetBuffer());
+
+    while (!contacts.IsEof())
+    {
+        /*Vector3 contactPosition = */contacts.ReadVector3();
+        /*Vector3 contactNormal = */contacts.ReadVector3();
+        /*float contactDistance = */contacts.ReadFloat();
+        /*float contactImpulse = */contacts.ReadFloat();
+    }
 }
