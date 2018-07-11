@@ -1,5 +1,5 @@
 # Arkanoid_Urho3D
-Arkanoid-like technical demo (work in progress). You will not find fine tuned gameplay or graphics here (or even sounds), at least not in the near future. It's not fully featured game but rather attempt at using Urho3D for Android. However it's totally possible to add it all to project.
+Arkanoid-like technical demo (work in progress). You will not find fine tuned gameplay or graphics here, at least not in the near future. It's not fully featured game but rather attempt at using Urho3D for Android. However it's totally possible to add it all to project.
 
 ## License
 Licensed under the MIT license, see LICENSE file for details.
